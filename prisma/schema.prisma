@@ -1,0 +1,73 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Idea {
+  id        String   @id @default(cuid())
+  title     String
+  notes     String?
+  tags      String   @default("")
+  status    String   @default("Backlog")
+  priority  Int      @default(3)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Checklist {
+  id        String          @id @default(cuid())
+  name      String
+  cadence   String          @default("Daily")
+  createdAt DateTime        @default(now())
+  items     ChecklistItem[]
+}
+
+model ChecklistItem {
+  id          String    @id @default(cuid())
+  checklistId String
+  text        String
+  done        Boolean   @default(false)
+  dueAt       DateTime?
+  priority    Int       @default(3)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  checklist   Checklist @relation(fields: [checklistId], references: [id], onDelete: Cascade)
+}
+
+model Lead {
+  id           String   @id @default(cuid())
+  businessName String
+  niche        String?
+  city         String?
+  website      String?
+  phone        String?
+  email        String?
+  source       String?
+  stage        String   @default("New")
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model LearningLink {
+  id        String   @id @default(cuid())
+  url       String
+  title     String?
+  notes     String?
+  status    String   @default("Queued")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  type      String
+  message   String
+  metadata  String?
+  createdAt DateTime @default(now())
+}
